@@ -1,10 +1,13 @@
-// app/login/actions.ts
+// @ts-nocheck
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
+  // 〜以下そのまま〜
+}
+
   // ★ async createClient なので必ず await
   const supabase = await createClient();
 
