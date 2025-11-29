@@ -2,14 +2,17 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";  // ★ここを変更
 import { deleteNote } from "./actions";
+// app/notes/new/page.tsx
+
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { createNote } from "../actions";  // ← ここを修正（../actions にする）
 
 export default async function NotesPage() {
-  const supabase = createClient();                      // ★ここも変更
+  const supabase = createClient();        // ← ここはこのままでOK
 
-  const { data: notes } = await supabase
-    .from("notes")
-    .select("*")
-    .order("id", { ascending: false });
+  // ... 以降は今のままでOK（form action={createNote} を使う）
+
 
   return (
     <main className="p-6">
