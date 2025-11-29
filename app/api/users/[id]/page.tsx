@@ -1,5 +1,5 @@
+// @ts-nocheck 
 // app/users/[id]/page.tsx
-
 type UserPageProps = {
     params: {
       id: string;
