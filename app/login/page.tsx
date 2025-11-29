@@ -1,13 +1,15 @@
 "use client";
 
+import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { createClient } from "@/lib/supabase/supabase-client";
 import { useAuthUser } from "@/lib/supabase/useAuthUser";
 
 export default function LoginPage() {
   const router = useRouter();
-  const auth = useAuthUser(); // ← さっき作ったフック
+  const supabase = createClient();       // ← ここで supabase を作る
+  const auth = useAuthUser();            // 認証状態（loading / guest / authed）
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,13 +59,14 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
             type="email"
             placeholder="メール"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="border px-3 py-2 rounded w-64"
           />
         </div>
         <div>
@@ -72,12 +75,17 @@ export default function LoginPage() {
             placeholder="パスワード"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="border px-3 py-2 rounded w-64"
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        >
           {loading ? "ログイン中…" : "ログイン"}
         </button>
-        {message && <p>{message}</p>}
+        {message && <p className="text-sm mt-2">{message}</p>}
       </form>
     </main>
   );

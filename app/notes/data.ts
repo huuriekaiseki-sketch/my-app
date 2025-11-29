@@ -1,14 +1,19 @@
 // app/notes/data.ts
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+import { createClient } from "@/lib/supabase/server";  // ← ここ
 
 export async function fetchNotes() {
-  const supabase = createSupabaseServerClient();
+  const supabase = createClient();                    // ← ここ
 
   const { data, error } = await supabase
     .from("notes")
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error("fetchNotes error:", error);
+    return [];
+  }
+
   return data ?? [];
 }

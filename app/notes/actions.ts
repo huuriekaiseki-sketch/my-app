@@ -1,18 +1,15 @@
 // app/notes/actions.ts
+
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server"; // ← ここを変更
 
 export async function deleteNote(formData: FormData) {
-  const id = formData.get("id");
+  const supabase = createClient();                // ← ここで使う
 
-  if (!id || typeof id !== "string") {
-    throw new Error("Note id is required");
-  }
-
-  const supabase = createSupabaseServerClient();
-
+  const id = formData.get("id") as string | null;
+  if (!id) return;
 
   const { error } = await supabase
     .from("notes")
@@ -20,10 +17,10 @@ export async function deleteNote(formData: FormData) {
     .eq("id", id);
 
   if (error) {
-    console.error("Failed to delete note:", error);
-    throw new Error("削除に失敗しました");
+    console.error("deleteNote error:", error);
+    return;
   }
 
-  // /notes 一覧を更新
+  // 一覧を最新化
   revalidatePath("/notes");
 }

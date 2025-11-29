@@ -1,19 +1,17 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createNote(formData: FormData) {
-  const title = formData.get("title") as string;
+  const supabase = createClient();
 
-  if (!title || title.trim() === "") return;
+  const content = formData.get("content")?.toString() ?? "";
 
-  const supabase = createSupabaseServerClient();
+  if (!content) return;
 
-  const { error } = await supabase.from("notes").insert({ title });
-
-  if (error) throw new Error("Supabase insert error: " + error.message);
+  await supabase.from("notes").insert({ content });
 
   revalidatePath("/notes");
   redirect("/notes");
