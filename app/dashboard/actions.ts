@@ -2,28 +2,24 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-
-export async function addMessage(formData: FormData) {
+export async function login(formData: FormData) {
   const supabase = await createClient();
 
-  const text = (formData.get("text") ?? "").toString().trim();
-  if (!text) return;
+  const email = String(formData.get("email") ?? "");
+  const password = String(formData.get("password") ?? "");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("Not authenticated");
-  }
-
-  await supabase.from("messages").insert({
-    text,
-    user_id: user.id,
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
 
-  // 投稿後に一覧を更新
-  revalidatePath("/dashboard");
+  if (error) {
+    console.error(error);
+    // エラー時の処理（必要なら）
+    return;
+  }
+
+  redirect("/dashboard");
 }
